@@ -22,7 +22,7 @@ void Renderer::StartGameLoop() {
                 for(auto cell : this->cells) {
                     if(cell->Contains(position)){
                         cell->Clicked();
-                        if(cell->numberMines == 0) {
+                        if(cell->numberMines == 0 && !cell->_isMine) {
                             RevealEmptyCells(cell);
                         }
                     }
@@ -122,24 +122,64 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
         int rowNumber = currentCell->rowNumber;
 
         // Left
-        if(cellID - 1 >= 0 && this->cells[cellID - 1]->numberMines == 0 && !this->cells[cellID - 1]->_isClicked && this->cells[cellID - 1]->rowNumber == rowNumber) {
-            cellsToCheck.push_back(this->cells[cellID - 1]);
+        if(cellID - 1 >= 0 && !this->cells[cellID - 1]->_isClicked && this->cells[cellID - 1]->rowNumber == rowNumber) {
+            if(this->cells[cellID - 1]->numberMines == 0) {
+                cellsToCheck.push_back(this->cells[cellID - 1]);
+            } else {
+                this->cells[cellID - 1]->Clicked();
+            }
+            
         }
         
         // Right
-        if(cellID + 1 < (pow(N_TILES, 2) - 1) && this->cells[cellID + 1]->numberMines == 0 && !this->cells[cellID + 1]->_isClicked && this->cells[cellID + 1]->rowNumber == rowNumber) {
-            cellsToCheck.push_back(this->cells[cellID + 1]);
+        if(cellID + 1 < (pow(N_TILES, 2) - 1) && !this->cells[cellID + 1]->_isClicked && this->cells[cellID + 1]->rowNumber == rowNumber) {
+            
+            if(this->cells[cellID + 1]->numberMines == 0) {
+                cellsToCheck.push_back(this->cells[cellID + 1]);
+            } else {
+                this->cells[cellID + 1]->Clicked();
+            }
         }
 
         // Top
-        if((cellID - N_TILES) > 0 && this->cells[cellID - N_TILES]->numberMines == 0 && !this->cells[cellID - N_TILES]->_isClicked) {
-            cellsToCheck.push_back(this->cells[cellID - N_TILES]);
+        if((cellID - N_TILES) > 0 && !this->cells[cellID - N_TILES]->_isClicked) {
+            
+            if(this->cells[cellID - N_TILES]->numberMines == 0) {
+                cellsToCheck.push_back(this->cells[cellID - N_TILES]);
+            } else {
+                this->cells[cellID - N_TILES]->Clicked();
+            }
         } 
 
         // Bottom
-        if((cellID + N_TILES) < (pow(N_TILES, 2) - 1) && this->cells[cellID + N_TILES]->numberMines == 0 && !this->cells[cellID + N_TILES]->_isClicked) {
-            cellsToCheck.push_back(this->cells[cellID + N_TILES]);
+        if((cellID + N_TILES) < (pow(N_TILES, 2) - 1) && !this->cells[cellID + N_TILES]->_isClicked) {
+            
+            if(this->cells[cellID + N_TILES]->numberMines == 0) {
+                cellsToCheck.push_back(this->cells[cellID + N_TILES]);
+            } else {
+                this->cells[cellID + N_TILES]->Clicked();
+            }
         } 
+
+        // Top left
+        if((cellID - N_TILES - 1) > 0) {
+            this->cells[cellID - N_TILES - 1]->Clicked();
+        }
+
+        // Bottom right
+        if((cellID + N_TILES + 1) < pow(N_TILES, 2)) {
+            this->cells[cellID + N_TILES + 1]->Clicked();
+        }
+
+        // Top right
+        if((cellID - N_TILES + 1) > 0) {
+            this->cells[cellID - N_TILES + 1]->Clicked();
+        }
+
+        // Bottom left
+        if((cellID + N_TILES - 1) < pow(N_TILES, 2)) {
+            this->cells[cellID + N_TILES - 1]->Clicked();
+        }
     }
 }
 
@@ -150,7 +190,7 @@ void Renderer::CreateCells() {
         return;
     }
     int totalNumberTiles = pow(N_TILES, 2);
-    std::vector<int> randomNumbers = GenerateRandomInRange(0, totalNumberTiles, totalNumberTiles / 9);
+    std::vector<int> randomNumbers = GenerateRandomInRange(0, totalNumberTiles, totalNumberTiles / P_MINE);
 
     int cellID = 0;
     sf::Vector2f tilePosition = sf::Vector2f(offset, offset);

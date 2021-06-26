@@ -5,5 +5,5 @@
 #define N_TILES 20
 
 #define WINDOW_SIZE 900
-
+#define P_MINE 5.f
 #endif
