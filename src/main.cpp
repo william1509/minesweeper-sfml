@@ -1,13 +1,15 @@
 #include <SFML/Graphics.hpp>
-#include "BigRectangleShape.h"
 #include "Renderer.h"
 #include "constants.h"
+#include "WindowFactory.hpp"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Scuffed minesweeper");
+    WindowFactory wf;
+
+    sf::RenderWindow* window = wf.MakeWindow();
     
-    Renderer* r = new Renderer(&window);
+    Renderer* r = new Renderer(window);
     r->StartGameLoop();
 
     return 0;

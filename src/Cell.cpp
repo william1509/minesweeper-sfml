@@ -4,11 +4,11 @@
 
 Cell::Cell(sf::Vector2f cellPosition, bool isMine, int cellID) {
 
-    sf::RectangleShape rect(sf::Vector2f(TILE_WIDTH, TILE_WIDTH));
+    sf::RectangleShape rect(sf::Vector2f(MINE_SIZE, MINE_SIZE));
     rect.setPosition(cellPosition);
-    rect.setFillColor(sf::Color(200, 200, 200));
+    //rect.setFillColor(sf::Color(200, 200, 200));
 
-    this->rectangle = rect;
+    
 
     static sf::Font font;
     font.loadFromFile("../fonts/aovel.ttf");
@@ -29,9 +29,11 @@ Cell::Cell(sf::Vector2f cellPosition, bool isMine, int cellID) {
     this->minesLabel = text;
 
     this->_isMine = isMine;
+
     this->_isClicked = false;
     this->cellID = cellID;
-    this->rowNumber = cellID / N_TILES;
+    this->rowNumber = cellID / MINE_WIDTH;
+    this->rectangle = rect;
 
 }
 

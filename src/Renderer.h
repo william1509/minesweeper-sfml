@@ -14,7 +14,6 @@ class Renderer {
     private:
         sf::RenderWindow *window;
         void DrawGrid();
-        double CalculateOffset();
         void SetCellMines();
         void RevealEmptyCells(Cell* startingCell);
 

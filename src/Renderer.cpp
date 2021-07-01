@@ -21,7 +21,9 @@ void Renderer::StartGameLoop() {
 
                 for(auto cell : this->cells) {
                     if(cell->Contains(position)){
+
                         cell->Clicked();
+
                         if(cell->numberMines == 0 && !cell->_isMine) {
                             RevealEmptyCells(cell);
                         }
@@ -46,9 +48,10 @@ void Renderer::DrawGrid() {
     std::for_each(this->cells.begin(), this->cells.end(), [this](Cell* cell) {
         
         this->window->draw(cell->rectangle);
+        this->window->draw(cell->minesLabel);
         if(cell->_isClicked) {
             if(!cell->_isMine) {
-                this->window->draw(cell->minesLabel);
+                
                 cell->rectangle.setFillColor(sf::Color(150, 150, 150));
             }
         }
@@ -68,47 +71,35 @@ void Renderer::SetCellMines() {
         }
         
         // Right
-        if(i < (pow(N_TILES, 2) - 1) && this->cells[i + 1]->rowNumber == rowNumber) {
+        if(i < (MINE_WIDTH * MINE_HEIGHT - 1) && this->cells[i + 1]->rowNumber == rowNumber) {
             totalMines += (int)this->cells[i + 1]->_isMine;
         }
 
         // Top
-        if((i - N_TILES) > 0) totalMines += (int)this->cells[i - N_TILES]->_isMine;
+        if((i - MINE_WIDTH) > 0) totalMines += (int)this->cells[i - MINE_WIDTH]->_isMine;
 
         // Bottom
-        if((i + N_TILES) < pow(N_TILES, 2)) totalMines += (int)this->cells[i + N_TILES]->_isMine;
+        if((i + MINE_WIDTH) < (MINE_WIDTH * MINE_HEIGHT)) totalMines += (int)this->cells[i + MINE_WIDTH]->_isMine;
 
         // Top left
-        if((i - N_TILES - 1) > 0) totalMines += (int)this->cells[i - N_TILES - 1]->_isMine;
+        if((i - MINE_WIDTH - 1) > 0) totalMines += (int)this->cells[i - MINE_WIDTH - 1]->_isMine;
 
         // Bottom right
-        if((i + N_TILES + 1) < pow(N_TILES, 2)) totalMines += (int)this->cells[i + N_TILES + 1]->_isMine;
+        if((i + MINE_WIDTH + 1) < (MINE_WIDTH * MINE_HEIGHT)) totalMines += (int)this->cells[i + MINE_WIDTH + 1]->_isMine;
 
         // Top right
-        if((i - N_TILES + 1) > 0) totalMines += (int)this->cells[i - N_TILES + 1]->_isMine;
+        if((i - MINE_WIDTH + 1) > 0) totalMines += (int)this->cells[i - MINE_WIDTH + 1]->_isMine;
 
         // Bottom left
-        if((i + N_TILES - 1) < pow(N_TILES, 2)) totalMines += (int)this->cells[i + N_TILES - 1]->_isMine;
+        if((i + MINE_WIDTH - 1) < (MINE_WIDTH * MINE_HEIGHT)) totalMines += (int)this->cells[i + MINE_WIDTH - 1]->_isMine;
         
         this->cells[i]->SetNumberMines(totalMines);
     }
 }
-
-double Renderer::CalculateOffset() {
-    double offset = (double)(window->getSize().x - N_TILES * TILE_WIDTH);
-
-    if(offset <= 0) {
-        return -1.0;
-    };
-    
-    offset /= (N_TILES + 1.0);
-    return offset;
-}
-
 void Renderer::RevealEmptyCells(Cell* startingCell) {
-    Cell* currentCell = startingCell;
+    
     std::vector<Cell*> cellsToCheck;
-
+    Cell* currentCell;
     cellsToCheck.push_back(startingCell);
 
     while(!cellsToCheck.empty()) {
@@ -116,99 +107,119 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
         currentCell = cellsToCheck.back();
         cellsToCheck.pop_back();
  
-        int cellID = currentCell->cellID;
         currentCell->Clicked();
 
         int rowNumber = currentCell->rowNumber;
 
-        // Left
-        if(cellID - 1 >= 0 && !this->cells[cellID - 1]->_isClicked && this->cells[cellID - 1]->rowNumber == rowNumber) {
-            if(this->cells[cellID - 1]->numberMines == 0) {
-                cellsToCheck.push_back(this->cells[cellID - 1]);
-            } else {
-                this->cells[cellID - 1]->Clicked();
-            }
-            
-        }
-        
-        // Right
-        if(cellID + 1 < (pow(N_TILES, 2) - 1) && !this->cells[cellID + 1]->_isClicked && this->cells[cellID + 1]->rowNumber == rowNumber) {
-            
-            if(this->cells[cellID + 1]->numberMines == 0) {
-                cellsToCheck.push_back(this->cells[cellID + 1]);
-            } else {
-                this->cells[cellID + 1]->Clicked();
+        int cellID = currentCell->cellID - 1;
+        // left
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID]->_isClicked && this->cells[cellID]->rowNumber == rowNumber) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
             }
         }
 
-        // Top
-        if((cellID - N_TILES) > 0 && !this->cells[cellID - N_TILES]->_isClicked) {
-            
-            if(this->cells[cellID - N_TILES]->numberMines == 0) {
-                cellsToCheck.push_back(this->cells[cellID - N_TILES]);
-            } else {
-                this->cells[cellID - N_TILES]->Clicked();
+        cellID = currentCell->cellID + 1;
+        // right
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID]->_isClicked && this->cells[cellID]->rowNumber == rowNumber) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
             }
-        } 
+        }
 
-        // Bottom
-        if((cellID + N_TILES) < (pow(N_TILES, 2) - 1) && !this->cells[cellID + N_TILES]->_isClicked) {
-            
-            if(this->cells[cellID + N_TILES]->numberMines == 0) {
-                cellsToCheck.push_back(this->cells[cellID + N_TILES]);
-            } else {
-                this->cells[cellID + N_TILES]->Clicked();
+        cellID = currentCell->cellID - MINE_WIDTH;
+        // top
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID]->_isClicked) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
             }
-        } 
-
-        // Top left
-        if((cellID - N_TILES - 1) > 0) {
-            this->cells[cellID - N_TILES - 1]->Clicked();
         }
 
-        // Bottom right
-        if((cellID + N_TILES + 1) < pow(N_TILES, 2)) {
-            this->cells[cellID + N_TILES + 1]->Clicked();
+        cellID = currentCell->cellID + MINE_WIDTH;
+        // bottom
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID]->_isClicked) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
+            }
         }
 
-        // Top right
-        if((cellID - N_TILES + 1) > 0) {
-            this->cells[cellID - N_TILES + 1]->Clicked();
+        cellID = currentCell->cellID - MINE_WIDTH - 1;
+        // top left
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID]->_isClicked && this->cells[cellID]->rowNumber == this->cells[cellID + 1]->rowNumber) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
+            }
         }
 
-        // Bottom left
-        if((cellID + N_TILES - 1) < pow(N_TILES, 2)) {
-            this->cells[cellID + N_TILES - 1]->Clicked();
+        cellID = currentCell->cellID + MINE_WIDTH + 1;
+        // top right
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID]->_isClicked && this->cells[cellID]->rowNumber == this->cells[cellID - 1]->rowNumber) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
+            }
+        }
+
+        cellID = currentCell->cellID - MINE_WIDTH + 1;
+        // bottom left
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID]->_isClicked && this->cells[cellID]->rowNumber == this->cells[cellID - 1]->rowNumber) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
+            }
+        }
+
+        cellID = currentCell->cellID + MINE_WIDTH - 1;
+        // bottom right
+        if(cellID >= 0 && cellID < (MINE_WIDTH * MINE_HEIGHT) && !this->cells[cellID && this->cells[cellID]->rowNumber == this->cells[cellID + 1]->rowNumber]->_isClicked) {
+            if(this->cells[cellID]->numberMines == 0) {
+                    cellsToCheck.push_back(this->cells[cellID]);
+                } else {
+                    this->cells[cellID]->Clicked();
+            }
         }
     }
 }
 
 void Renderer::CreateCells() {
-    double offset = CalculateOffset();
+    double offset = MINE_MARGIN;
     if(offset < 0) {
         Logger::Log("Error creating cells");
         return;
     }
-    int totalNumberTiles = pow(N_TILES, 2);
-    std::vector<int> randomNumbers = GenerateRandomInRange(0, totalNumberTiles, totalNumberTiles / P_MINE);
+    int totalNumberTiles = MINE_WIDTH * MINE_HEIGHT;
+    std::vector<int> randomNumbers = GenerateRandomInRange(0, totalNumberTiles, totalNumberTiles * P_MINE);
 
     int cellID = 0;
     sf::Vector2f tilePosition = sf::Vector2f(offset, offset);
-    for (size_t i = 0; i < N_TILES; i++) {
-        for (size_t j = 0; j < N_TILES; j++) {
+    for (size_t i = 0; i < MINE_HEIGHT; i++) {
+        for (size_t j = 0; j < MINE_WIDTH; j++) {
 
             Cell* cell = new Cell(tilePosition, false, cellID);
 
             if(std::find(randomNumbers.begin(), randomNumbers.end(), cellID) != randomNumbers.end()) {
                 cell->_isMine = true;
+                cell->rectangle.setFillColor(sf::Color().Red);
             }
             this->cells.push_back(cell);
 
-            tilePosition += sf::Vector2f(0, TILE_WIDTH + offset);
+            tilePosition += sf::Vector2f(MINE_SIZE + offset, 0);
 
             cellID++;
         }
-        tilePosition = sf::Vector2f(tilePosition.x + TILE_WIDTH + offset, offset);
+        tilePosition = sf::Vector2f(offset, tilePosition.y + MINE_SIZE + offset);
     }
 }
 
