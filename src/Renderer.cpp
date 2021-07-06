@@ -22,11 +22,16 @@ void Renderer::StartGameLoop() {
                 for(auto cell : this->cells) {
                     if(cell->Contains(position)){
 
-                        cell->Clicked();
+                        if(event.mouseButton.button == sf::Mouse::Left) {
+                            cell->LClicked();
 
-                        if(cell->numberMines == 0 && !cell->_isMine) {
-                            RevealEmptyCells(cell);
+                            if(cell->numberMines == 0 && !cell->_isMine) {
+                                RevealEmptyCells(cell);
+                            }
+                        } else if(event.mouseButton.button == sf::Mouse::Right) {
+                            cell->RClicked();
                         }
+                        
                     }
                 }
 
@@ -48,10 +53,9 @@ void Renderer::DrawGrid() {
     std::for_each(this->cells.begin(), this->cells.end(), [this](Cell* cell) {
         
         this->window->draw(cell->rectangle);
-        this->window->draw(cell->minesLabel);
         if(cell->_isClicked) {
             if(!cell->_isMine) {
-                
+                this->window->draw(cell->minesLabel);
                 cell->rectangle.setFillColor(sf::Color(150, 150, 150));
             }
         }
@@ -107,7 +111,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
         currentCell = cellsToCheck.back();
         cellsToCheck.pop_back();
  
-        currentCell->Clicked();
+        currentCell->LClicked();
 
         int rowNumber = currentCell->rowNumber;
 
@@ -117,7 +121,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
 
@@ -127,7 +131,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
 
@@ -137,7 +141,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
 
@@ -147,7 +151,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
 
@@ -157,7 +161,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
 
@@ -167,7 +171,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
 
@@ -177,7 +181,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
 
@@ -187,7 +191,7 @@ void Renderer::RevealEmptyCells(Cell* startingCell) {
             if(this->cells[cellID]->numberMines == 0) {
                     cellsToCheck.push_back(this->cells[cellID]);
                 } else {
-                    this->cells[cellID]->Clicked();
+                    this->cells[cellID]->LClicked();
             }
         }
     }
@@ -211,7 +215,6 @@ void Renderer::CreateCells() {
 
             if(std::find(randomNumbers.begin(), randomNumbers.end(), cellID) != randomNumbers.end()) {
                 cell->_isMine = true;
-                cell->rectangle.setFillColor(sf::Color().Red);
             }
             this->cells.push_back(cell);
 

@@ -11,7 +11,8 @@ class Cell {
         Cell();
         bool Contains(sf::Vector2f mousePosition);
         void SetNumberMines(int numberMines);
-        void Clicked();
+        void LClicked();
+        void RClicked();
 
         sf::RectangleShape rectangle;
         sf::Text minesLabel;
@@ -20,6 +21,7 @@ class Cell {
         bool _isClicked;
         int cellID;
         int rowNumber;
+        bool _isFlagged;
 
 };
 

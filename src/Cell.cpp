@@ -6,7 +6,7 @@ Cell::Cell(sf::Vector2f cellPosition, bool isMine, int cellID) {
 
     sf::RectangleShape rect(sf::Vector2f(MINE_SIZE, MINE_SIZE));
     rect.setPosition(cellPosition);
-    //rect.setFillColor(sf::Color(200, 200, 200));
+    rect.setFillColor(sf::Color(200, 200, 200));
 
     
 
@@ -34,16 +34,32 @@ Cell::Cell(sf::Vector2f cellPosition, bool isMine, int cellID) {
     this->cellID = cellID;
     this->rowNumber = cellID / MINE_WIDTH;
     this->rectangle = rect;
+    this->_isFlagged = false;
 
 }
 
-void Cell::Clicked() {
+void Cell::LClicked() {
+
     this->_isClicked = true;
     if(this->_isMine) {
         this->rectangle.setFillColor(sf::Color().Red);
     } else {
         this->rectangle.setFillColor(sf::Color(150, 150, 150));
     }
+} 
+
+void Cell::RClicked() {
+
+    if(this->_isClicked) return;
+
+    if(!this->_isFlagged) {
+        this->_isFlagged = true;
+        this->rectangle.setFillColor(sf::Color().Green);
+    } else {
+        this->_isFlagged = false;
+        this->rectangle.setFillColor(sf::Color(200, 200, 200));
+    }
+    
 } 
 
 void Cell::SetNumberMines(int numberMines) {
