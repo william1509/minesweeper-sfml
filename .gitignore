@@ -33,6 +33,6 @@
 
 # bin
 
-bin/
-obj/
+bin/game
+obj/*.o
 .vscode/
