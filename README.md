@@ -1,10 +1,9 @@
-export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0
 
 Instructions
 
 **Linux**
 
-Simply execute the makefile with the command ```make```
+Simply execute the makefile with the command ```make```. It creates an executable in the bin folder.
 
 **With Visual Studio Code**
 
@@ -76,4 +75,9 @@ and this to the launch.json file
     ]
 }
 ```
-If you are using WSL, you'll need an XServer on your host machine
+This makes it possible to launch the game with F5
+
+If you are using WSL, you'll need an XServer on your host machine. You can connect WSL to the XServer with
+```
+export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0 
+```
